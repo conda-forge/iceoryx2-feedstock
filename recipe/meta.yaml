@@ -1,4 +1,4 @@
-{% set version = "0.8.0" %}
+{% set version = "0.8.1" %}
 
 package:
   name: iceoryx2-split
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/eclipse-iceoryx/iceoryx2/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: d6bd4de7955d9c73027184c62efd99950b546b021d010c377c41ff6d9b604723
+  sha256: 203bbd2f984a21cc59732b259337d2a890afbaaf2295150fecc842e504eb1740
 
 build:
   number: 0
