@@ -1,0 +1,165 @@
+schema_version: 1
+
+context:
+  version: "0.9.3"
+
+recipe:
+  name: iceoryx2-split
+  version: ${{ version }}
+
+source:
+  url: https://github.com/eclipse-iceoryx/iceoryx2/archive/refs/tags/v${{ version }}.tar.gz
+  sha256: 2b4438364614b390938354ac766c198bb2ad63a2bde84a142c53f555fe8f4bc1
+
+build:
+  number: 1
+  skip:
+    - win
+  script: build
+
+outputs:
+  - package:
+      name: libiceoryx2-ffi-c
+    build:
+      files:
+        - if: linux
+          then: lib/libiceoryx2_ffi_c.so
+        - if: osx
+          then: lib/libiceoryx2_ffi_c.dylib
+    requirements:
+      build:
+        - ${{ compiler("rust") }}
+        - ${{ compiler("c") }}
+        - ${{ compiler("cxx") }}
+        - ${{ stdlib("c") }}
+        - cargo-bundle-licenses
+        - cmake
+        - make
+        - libclang
+        - clang_impl_${{ target_platform }}
+      host:
+        - if: linux
+          then: libacl
+        - libiceoryx-hoofs-devel >=2.95.7
+    tests:
+      - script: test -f ${PREFIX}/lib/libiceoryx2_ffi_c${SHLIB_EXT}
+
+  - package:
+      name: libiceoryx2-ffi-c-devel
+    build:
+      files:
+        - lib/cmake/iceoryx2-cmake-modules/
+        - include/iceoryx2/v${{ version }}/iox2/iceoryx2.h
+        - share/doc/iceoryx2-c/
+        - lib/cmake/iceoryx2-c/
+    requirements:
+      build:
+        - ${{ compiler("rust") }}
+        - ${{ compiler("c") }}
+        - ${{ compiler("cxx") }}
+        - ${{ stdlib("c") }}
+        - cargo-bundle-licenses
+        - cmake
+        - make
+        - libclang
+        - clang_impl_${{ target_platform }}
+      host:
+        - if: linux
+          then: libacl
+        - libiceoryx-hoofs-devel >=2.95.7
+        - ${{ pin_subpackage("libiceoryx2-ffi-c", exact=True) }}
+      run:
+        - ${{ pin_subpackage("libiceoryx2-ffi-c", exact=True) }}
+      run_exports:
+        - ${{ pin_subpackage("libiceoryx2-ffi-c", upper_bound="x.x.x") }}
+    tests:
+      - script: test -f ${PREFIX}/include/iceoryx2/v${{ version }}/iox2/iceoryx2.h
+
+  - package:
+      name: libiceoryx2-cxx
+    build:
+      files:
+        - if: linux
+          then: lib/libiceoryx2_cxx.so
+        - if: osx
+          then: lib/libiceoryx2_cxx.dylib
+    requirements:
+      build:
+        - ${{ compiler("rust") }}
+        - ${{ compiler("c") }}
+        - ${{ compiler("cxx") }}
+        - ${{ stdlib("c") }}
+        - cargo-bundle-licenses
+        - cmake
+        - make
+        - libclang
+        - clang_impl_${{ target_platform }}
+      host:
+        - if: linux
+          then: libacl
+        - libiceoryx-hoofs-devel >=2.95.7
+        - ${{ pin_subpackage("libiceoryx2-ffi-c-devel", exact=True) }}
+        - ${{ pin_subpackage("libiceoryx2-ffi-c", exact=True) }}
+      run:
+        - ${{ pin_subpackage("libiceoryx2-ffi-c", exact=True) }}
+    tests:
+      - script: test -f ${PREFIX}/lib/libiceoryx2_cxx${SHLIB_EXT}
+
+  - package:
+      name: libiceoryx2-cxx-devel
+    build:
+      files:
+        include:
+          - lib/cmake/iceoryx2-bb-cxx/
+          - lib/cmake/iceoryx2-cxx/
+          - include/iceoryx2/v${{ version }}/iox2/
+          - include/iceoryx2/v${{ version }}/iox/
+          - share/doc/iceoryx2-cxx/
+          - share/doc/iceoryx2-bb-cxx/
+        exclude:
+          - include/iceoryx2/v${{ version }}/iox2/iceoryx2.h
+    requirements:
+      build:
+        - ${{ compiler("rust") }}
+        - ${{ compiler("c") }}
+        - ${{ compiler("cxx") }}
+        - ${{ stdlib("c") }}
+        - cargo-bundle-licenses
+        - cmake
+        - make
+        - libclang
+        - clang_impl_${{ target_platform }}
+      host:
+        - if: linux
+          then: libacl
+        - libiceoryx-hoofs-devel >=2.95.7
+        - ${{ pin_subpackage("libiceoryx2-ffi-c-devel", exact=True) }}
+        - ${{ pin_subpackage("libiceoryx2-ffi-c", exact=True) }}
+        - ${{ pin_subpackage("libiceoryx2-cxx", exact=True) }}
+      run:
+        - ${{ pin_subpackage("libiceoryx2-ffi-c-devel", exact=True) }}
+        - ${{ pin_subpackage("libiceoryx2-cxx", exact=True) }}
+        - libiceoryx-hoofs-devel
+      run_exports:
+        - ${{ pin_subpackage("libiceoryx2-cxx", upper_bound="x.x.x") }}
+    tests:
+      - script: test -f ${PREFIX}/include/iceoryx2/v${{ version }}/iox2/client.hpp
+
+about:
+  homepage: https://iceoryx.io/
+  summary: Eclipse iceoryx - true zero-copy inter-process-communication
+  description: |
+    Eclipse iceoryx is an inter-process-communication middleware that enables
+    virtually limitless data transmissions at constant time.
+  license: Apache-2.0 AND MIT AND EPL-2.0
+  license_file:
+    - LICENSE-APACHE
+    - LICENSE-MIT
+    - THIRDPARTY.yml
+  documentation: https://iceoryx.io/latest/
+  repository: https://github.com/eclipse-iceoryx/iceoryx2
+
+extra:
+  feedstock-name: iceoryx2
+  recipe-maintainers:
+    - timkpaine
