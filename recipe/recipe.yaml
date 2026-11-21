@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "0.10.0"
+  version: "0.10.1"
 
 recipe:
   name: iceoryx2-split
@@ -9,7 +9,7 @@ recipe:
 
 source:
   url: https://github.com/eclipse-iceoryx/iceoryx2/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: ef14e6b8f7cbb003dc0f67f06dd00436fe4ed3ddd97154efde5796bc441d0265
+  sha256: f6ad9608f61b93e7578645ef738c3b56ea980761f8765ee47aa49423cb12d763
 
 build:
   number: 0
